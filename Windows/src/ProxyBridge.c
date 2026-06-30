@@ -32,7 +32,7 @@
 #define CONNECTION_HASH_SIZE 4096
 #define SOCKS5_BUFFER_SIZE 1024
 #define HTTP_BUFFER_SIZE 1024
-#define FILTER_BUFFER_SIZE 1024
+#define FILTER_BUFFER_SIZE 2048
 #define LOG_BUFFER_SIZE 1024
 #define MAX_LIST_SIZE 65536  // max byte length for semicolon-delimited host/port/process lists
 
@@ -4730,6 +4730,24 @@ PROXYBRIDGE_API BOOL ProxyBridge_Start(void)
     LOCAL_UDP_RELAY_PORT, LOCAL_UDP_RELAY_PORT);
 
     log_message("WinDivert filter: %s", filter);
+
+    const char *err = NULL;
+    UINT err_pos = 0;
+
+    BOOL ok = WinDivertHelperCompileFilter(
+        filter,
+        WINDIVERT_LAYER_NETWORK,
+        NULL,
+        0,
+        &err,
+        &err_pos
+    );
+
+    if (!ok) {
+        log_message("Filter compile failed at pos=%u, error=%s", err_pos, err);
+        log_message("Filter: %s", filter);
+        return false;
+    }
 
     // Note: Added 'loopback' to filter to capture localhost (127.x.x.x) traffic
     // This enables proxying local connections for MITM scenarios
