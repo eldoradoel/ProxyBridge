@@ -4712,18 +4712,22 @@ PROXYBRIDGE_API BOOL ProxyBridge_Start(void)
     // and flow directly to the OS — zero extra hops, no loops.
     snprintf(filter, sizeof(filter),
     "not impostor and "
-    "not (udp and ("
-        "udp.SrcPort == 67 or udp.DstPort == 67 or "
-        "udp.SrcPort == 68 or udp.DstPort == 68 or "
-        "udp.SrcPort == 546 or udp.DstPort == 546 or "
-        "udp.SrcPort == 547 or udp.DstPort == 547"
-    ")) and ("
-    "(tcp and (outbound or loopback or (tcp.DstPort == %d or tcp.SrcPort == %d))) or "
-    "(udp and (outbound or loopback or (udp.DstPort == %d or udp.SrcPort == %d))) or "
-    "(udp and not outbound and udp.SrcPort == 53) or "
-    "(ipv6 and udp and not outbound and udp.SrcPort == 53) or "
-    "(ipv6 and tcp and (outbound or loopback or (tcp.DstPort == %d or tcp.SrcPort == %d))) or "
-    "(ipv6 and udp and (outbound or loopback or (udp.DstPort == %d or udp.SrcPort == %d))))",
+    "("
+        "not udp or "
+        "("
+            "udp.SrcPort != 67 and udp.DstPort != 67 and "
+            "udp.SrcPort != 68 and udp.DstPort != 68 and "
+            "udp.SrcPort != 546 and udp.DstPort != 546 and "
+            "udp.SrcPort != 547 and udp.DstPort != 547"
+        ")"
+    ") and ("
+        "(tcp and (outbound or loopback or tcp.DstPort == %d or tcp.SrcPort == %d)) or "
+        "(udp and (outbound or loopback or udp.DstPort == %d or udp.SrcPort == %d)) or "
+        "(udp and inbound and udp.SrcPort == 53) or "
+        "(ipv6 and udp and inbound and udp.SrcPort == 53) or "
+        "(ipv6 and tcp and (outbound or loopback or tcp.DstPort == %d or tcp.SrcPort == %d)) or "
+        "(ipv6 and udp and (outbound or loopback or udp.DstPort == %d or udp.SrcPort == %d))"
+    ")",
     g_local_relay_port, g_local_relay_port,
     LOCAL_UDP_RELAY_PORT, LOCAL_UDP_RELAY_PORT,
     g_local_relay_port, g_local_relay_port,
