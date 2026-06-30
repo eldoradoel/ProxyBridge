@@ -4746,7 +4746,7 @@ PROXYBRIDGE_API BOOL ProxyBridge_Start(void)
     if (!ok) {
         log_message("Filter compile failed at pos=%u, error=%s", err_pos, err);
         log_message("Filter: %s", filter);
-        return false;
+        return FALSE;
     }
 
     // Note: Added 'loopback' to filter to capture localhost (127.x.x.x) traffic
