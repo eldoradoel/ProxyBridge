@@ -4729,6 +4729,8 @@ PROXYBRIDGE_API BOOL ProxyBridge_Start(void)
     g_local_relay_port, g_local_relay_port,
     LOCAL_UDP_RELAY_PORT, LOCAL_UDP_RELAY_PORT);
 
+    log_message("WinDivert filter: %s", filter);
+
     // Note: Added 'loopback' to filter to capture localhost (127.x.x.x) traffic
     // This enables proxying local connections for MITM scenarios
     windivert_handle = WinDivertOpen(filter, WINDIVERT_LAYER_NETWORK, priority, 0);
